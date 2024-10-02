@@ -5,12 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/nelsen129/player-league"
 	"github.com/nelsen129/player-league/server"
+	"github.com/nelsen129/player-league/store"
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := main.NewInMemoryPlayerStore()
+	store := store.NewInMemoryPlayerStore()
 	playerServer := server.NewPlayerServer(store)
 	player := "Pepper"
 	wins := 3

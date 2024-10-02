@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"errors"
@@ -23,8 +23,5 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) (int, error) {
 }
 
 func (i *InMemoryPlayerStore) RecordWin(name string) {
-	if _, ok := i.store[name]; !ok {
-		i.store[name] = 0
-	}
 	i.store[name]++
 }

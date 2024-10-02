@@ -6,21 +6,28 @@ import (
 	"strings"
 )
 
+// PlayerStore records and stores the scores for players
 type PlayerStore interface {
+	// Should return a player's score
 	GetPlayerScore(name string) (int, error)
+	// Should increment a player's score
 	RecordWin(name string)
 }
 
+// PlayerServer handles the HTTP routing for requests that
+// interact with the PlayerStore
 type PlayerServer struct {
 	store PlayerStore
 }
 
+// NewPlayerServer initializes a PlayerServer with a PlayerStore
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	return &PlayerServer{
 		store: store,
 	}
 }
 
+// ServeHTTP handles the HTTP server for player requests.
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
