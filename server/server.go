@@ -18,35 +18,35 @@ type PlayerStore interface {
 // interact with the PlayerStore
 type PlayerServer struct {
 	store PlayerStore
+	http.Handler
 }
 
 // NewPlayerServer initializes a PlayerServer with a PlayerStore
 func NewPlayerServer(store PlayerStore) *PlayerServer {
-	return &PlayerServer{
-		store: store,
-	}
+	p := new(PlayerServer)
+	p.store = store
+
+	router := http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.playerHandler))
+	p.Handler = router
+
+	return p
 }
 
-// ServeHTTP handles the HTTP server for player requests.
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	router := http.NewServeMux()
+func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
 
-	router.Handle("/league", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
+func (p *PlayerServer) playerHandler(w http.ResponseWriter, r *http.Request) {
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
-	router.Handle("/players/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		player := strings.TrimPrefix(r.URL.Path, "/players/")
-
-		switch r.Method {
-		case http.MethodGet:
-			p.getScore(w, player)
-		case http.MethodPost:
-			p.incrementScore(w, player)
-		}
-	}))
-
-	router.ServeHTTP(w, r)
+	switch r.Method {
+	case http.MethodGet:
+		p.getScore(w, player)
+	case http.MethodPost:
+		p.incrementScore(w, player)
+	}
 }
 
 func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
