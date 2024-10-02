@@ -29,14 +29,24 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 // ServeHTTP handles the HTTP server for player requests.
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
+	router := http.NewServeMux()
 
-	switch r.Method {
-	case http.MethodGet:
-		p.getScore(w, player)
-	case http.MethodPost:
-		p.incrementScore(w, player)
-	}
+	router.Handle("/league", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	router.Handle("/players/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		player := strings.TrimPrefix(r.URL.Path, "/players/")
+
+		switch r.Method {
+		case http.MethodGet:
+			p.getScore(w, player)
+		case http.MethodPost:
+			p.incrementScore(w, player)
+		}
+	}))
+
+	router.ServeHTTP(w, r)
 }
 
 func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
