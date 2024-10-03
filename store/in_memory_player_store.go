@@ -50,10 +50,10 @@ func (i *InMemoryPlayerStore) GetLeague() League {
 }
 
 func (i *InMemoryPlayerStore) getUnsortedLeague() League {
-	league := make(League, len(i.store))
-	idx := 0
 	i.mu.Lock()
 	defer i.mu.Unlock()
+	league := make(League, len(i.store))
+	idx := 0
 	for k, v := range i.store {
 		league[idx] = Player{Name: k, Wins: v}
 		idx++

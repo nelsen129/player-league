@@ -38,6 +38,8 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 	})
 
 	t.Run("can return a league of players", func(t *testing.T) {
+		// Note that state is currently shared across tests,
+		// so the Neil wins are from the previous test
 		wantedLeague := store.League{
 			{"Neil", 3},
 			{"Bob", 2},
@@ -54,6 +56,9 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 	t.Run("handles concurrent operations", func(t *testing.T) {
 		count := 1000
 		player := "Karen"
+
+		// record first win so get won't fail
+		playerStore.RecordWin(player)
 
 		var wg sync.WaitGroup
 		wg.Add(3 * count)
@@ -80,8 +85,8 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 		got, _ := playerStore.GetPlayerScore(player)
 		league := playerStore.GetLeague()
 
-		if got != count {
-			t.Errorf("got %d, want %d, league %v", got, count, league)
+		if got != count+1 {
+			t.Errorf("got %d, want %d, league %v", got, count+1, league)
 		}
 	})
 }
