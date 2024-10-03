@@ -27,7 +27,7 @@ func ExampleTape() {
 		fmt.Println(err)
 	}
 
-	err = file.Seek(0, io.SeekStart)
+	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
 		fmt.Println(err)
 	}
