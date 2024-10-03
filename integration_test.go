@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 
@@ -13,7 +14,9 @@ import (
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	playerStore := store.NewInMemoryPlayerStore()
+	database, cleanDatabase := createTempFile(t, "")
+	defer cleanDatabase()
+	playerStore := store.NewFileSystemPlayerStore(database)
 	playerServer := server.NewPlayerServer(playerStore)
 	player := "Pepper"
 	wins := 3
@@ -41,6 +44,24 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	})
 }
 
+func createTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func()) {
+	t.Helper()
+
+	tmpfile, err := os.CreateTemp("", "db")
+
+	if err != nil {
+		t.Fatalf("could not create temp file %v", err)
+	}
+
+	tmpfile.Write([]byte(initialData))
+
+	removeFile := func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}
+
+	return tmpfile, removeFile
+}
 func newGetScoreRequest(player string) *http.Request {
 	r, _ := http.NewRequest(http.MethodGet, "/players/"+player, nil)
 	return r
