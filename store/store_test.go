@@ -1,6 +1,7 @@
 package store_test
 
 import (
+	"reflect"
 	"sync"
 	"testing"
 
@@ -33,6 +34,20 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 
 		if got != want {
 			t.Errorf("got %d, want %d", got, want)
+		}
+	})
+
+	t.Run("can return a league of players", func(t *testing.T) {
+		wantedLeague := []store.Player{
+			{"Neil", 3},
+			{"Bob", 2},
+		}
+		playerStore.RecordWin("Bob")
+		playerStore.RecordWin("Bob")
+		got := playerStore.GetLeague()
+
+		if !reflect.DeepEqual(got, wantedLeague) {
+			t.Errorf("got %v, want %v", got, wantedLeague)
 		}
 	})
 

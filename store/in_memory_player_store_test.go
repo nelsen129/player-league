@@ -7,6 +7,8 @@ import (
 )
 
 func TestInMemoryPlayerStore(t *testing.T) {
-	playerStore := store.NewInMemoryPlayerStore()
-	testStore(t, playerStore)
+	t.Run("standard player store suite", func(t *testing.T) {
+		playerStore := store.NewInMemoryPlayerStore()
+		testStore(t, playerStore)
+	})
 }

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"sort"
 	"sync"
 )
 
@@ -34,4 +35,19 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	i.store[name]++
+}
+
+// GetLeague returns an ordered slice containing every Player in the league
+// sorted by score, descending
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	league := make(PlayerSlice, len(i.store))
+	idx := 0
+	for k, v := range i.store {
+		league[idx] = Player{Name: k, Wins: v}
+		idx++
+	}
+
+	sort.Sort(league)
+	sort.Reverse(league)
+	return league
 }
