@@ -11,7 +11,12 @@ func TestFileSystemPlayerStore(t *testing.T) {
 	t.Run("standard player store suite", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[]`)
 		defer cleanDatabase()
-		playerStore := store.NewFileSystemPlayerStore(database)
+		playerStore, err := store.NewFileSystemPlayerStore(database)
+
+		if err != nil {
+			t.Fatalf("could not create file system player store %v", err)
+		}
+
 		testStore(t, playerStore)
 	})
 }

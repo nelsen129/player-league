@@ -14,9 +14,13 @@ import (
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	database, cleanDatabase := createTempFile(t, "")
+	database, cleanDatabase := createTempFile(t, "[]")
 	defer cleanDatabase()
-	playerStore := store.NewFileSystemPlayerStore(database)
+	playerStore, err := store.NewFileSystemPlayerStore(database)
+	if err != nil {
+		t.Fatalf("could not create file system player store %v", err)
+	}
+
 	playerServer := server.NewPlayerServer(playerStore)
 	player := "Pepper"
 	wins := 3
@@ -44,7 +48,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	})
 }
 
-func createTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := os.CreateTemp("", "db")

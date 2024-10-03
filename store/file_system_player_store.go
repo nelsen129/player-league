@@ -2,6 +2,7 @@ package store
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"sync"
@@ -18,13 +19,18 @@ type FileSystemPlayerStore struct {
 }
 
 // NewFileSystemPlayerStore returns an FileSystemPlayerStore with an empty store
-func NewFileSystemPlayerStore(database *os.File) *FileSystemPlayerStore {
-	database.Seek(0, io.SeekStart)
-	league, _ := NewLeague(database)
+func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
+	file.Seek(0, io.SeekStart)
+	league, err := NewLeague(file)
+
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
+
 	f := new(FileSystemPlayerStore)
-	f.database = json.NewEncoder(tape.NewTape(database))
+	f.database = json.NewEncoder(tape.NewTape(file))
 	f.league = league
-	return f
+	return f, nil
 }
 
 // GetPlayerScore returns a score if the player exists or an error if
