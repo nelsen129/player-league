@@ -4,25 +4,19 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-)
 
-// PlayerStore records and stores the scores for players
-type PlayerStore interface {
-	// Should return a player's score
-	GetPlayerScore(name string) (int, error)
-	// Should increment a player's score
-	RecordWin(name string)
-}
+	"github.com/nelsen129/player-league/store"
+)
 
 // PlayerServer handles the HTTP routing for requests that
 // interact with the PlayerStore
 type PlayerServer struct {
-	store PlayerStore
+	store store.PlayerStore
 	http.Handler
 }
 
 // NewPlayerServer initializes a PlayerServer with a PlayerStore
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store store.PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 	p.store = store
 

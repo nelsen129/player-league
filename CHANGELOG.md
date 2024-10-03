@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 ### Changed
+- PlayerStore interface moved from the server package to the store package
 ### Deprecated
 ### Removed
 ### Fixed
