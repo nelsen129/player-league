@@ -51,7 +51,7 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) (int, error) {
 
 // RecordWin increments a player's score by 1. If the player doesn't exist,
 // it will create the player and increment their score to 1.
-func (f *FileSystemPlayerStore) RecordWin(name string) {
+func (f *FileSystemPlayerStore) RecordWin(name string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	player := f.league.Find(name)
@@ -62,7 +62,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 		player.Wins++
 	}
 
-	f.database.Encode(f.league)
+	return f.database.Encode(f.league)
 }
 
 // GetLeague returns an ordered slice containing every Player in the league

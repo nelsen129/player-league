@@ -20,7 +20,7 @@ type PlayerStore interface {
 	// Should return a player's score
 	GetPlayerScore(name string) (int, error)
 	// Should increment a player's score
-	RecordWin(name string)
+	RecordWin(name string) error
 	// Should return a league containing all players
 	GetLeague() League
 }

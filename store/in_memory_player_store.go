@@ -32,10 +32,12 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) (int, error) {
 
 // RecordWin increments a player's score by 1. If the player doesn't exist,
 // it will create the player and increment their score to 1.
-func (i *InMemoryPlayerStore) RecordWin(name string) {
+func (i *InMemoryPlayerStore) RecordWin(name string) error {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	i.store[name]++
+
+	return nil
 }
 
 // GetLeague returns an ordered slice containing every Player in the league

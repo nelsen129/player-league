@@ -12,6 +12,9 @@ import (
 	"github.com/nelsen129/player-league/store"
 )
 
+// Dummy player to simulate errors in player store
+const errPlayer = "ERROR"
+
 func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
 		score: map[string]int{
@@ -69,6 +72,15 @@ func TestStoreWins(t *testing.T) {
 		assertStatus(t, response.Code, http.StatusAccepted)
 		assertWinCalls(t, store.winCalls, []string{"Pepper"})
 	})
+
+	t.Run("it returns 500 on error", func(t *testing.T) {
+		request := newPostWinRequest(errPlayer)
+		response := httptest.NewRecorder()
+
+		playerServer.ServeHTTP(response, request)
+
+		assertStatus(t, response.Code, http.StatusInternalServerError)
+	})
 }
 
 func TestLeague(t *testing.T) {
@@ -106,13 +118,17 @@ type StubPlayerStore struct {
 func (s *StubPlayerStore) GetPlayerScore(name string) (int, error) {
 	score, ok := s.score[name]
 	if !ok {
-		return 0, errors.New("Player not found")
+		return 0, errors.New("player not found")
 	}
 	return score, nil
 }
 
-func (s *StubPlayerStore) RecordWin(name string) {
+func (s *StubPlayerStore) RecordWin(name string) error {
+	if name == errPlayer {
+		return errors.New("erroring on dummy player")
+	}
 	s.winCalls = append(s.winCalls, name)
+	return nil
 }
 
 func (s *StubPlayerStore) GetLeague() store.League {

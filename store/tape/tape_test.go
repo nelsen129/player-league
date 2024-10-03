@@ -19,7 +19,11 @@ func TestTape_Write(t *testing.T) {
 		t.Fatalf("could not write to file %v", err)
 	}
 
-	file.Seek(0, io.SeekStart)
+	err := file.Seek(0, io.SeekStart)
+	if err != nil {
+		t.Fatalf("could not seek file %v", err)
+	}
+
 	newFileContents, _ := io.ReadAll(file)
 
 	got := string(newFileContents)

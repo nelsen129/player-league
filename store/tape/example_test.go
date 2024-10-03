@@ -27,7 +27,11 @@ func ExampleTape() {
 		fmt.Println(err)
 	}
 
-	file.Seek(0, io.SeekStart)
+	err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	newFileContents, err := io.ReadAll(file)
 	if err != nil {
 		fmt.Println(err)
