@@ -1,6 +1,7 @@
 package store_test
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/nelsen129/player-league/store"
@@ -29,6 +30,36 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 
 		if got != want {
 			t.Errorf("got %d, want %d", got, want)
+		}
+	})
+
+	t.Run("handles concurrent operations", func(t *testing.T) {
+		winCount := 1000
+		scoreCount := 1000
+		player := "Karen"
+
+		var wg sync.WaitGroup
+		wg.Add(winCount)
+		wg.Add(scoreCount)
+
+		for range winCount {
+			go func() {
+				playerStore.RecordWin(player)
+				wg.Done()
+			}()
+		}
+		for range scoreCount {
+			go func() {
+				playerStore.GetPlayerScore(player)
+				wg.Done()
+			}()
+		}
+		wg.Wait()
+
+		got, _ := playerStore.GetPlayerScore(player)
+
+		if got != winCount {
+			t.Errorf("got %d, want %d", got, winCount)
 		}
 	})
 }
