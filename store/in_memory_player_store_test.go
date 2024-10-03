@@ -32,7 +32,7 @@ func TestInMemoryPlayerStore(t *testing.T) {
 
 		for _, player := range unsortedLeague {
 			for range player.Wins {
-				playerStore.RecordWin(player.Name)
+				assertNoError(t, playerStore.RecordWin(player.Name))
 			}
 		}
 
