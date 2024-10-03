@@ -10,13 +10,23 @@ import (
 func ExampleInMemoryPlayerStore() {
 	playerStore := store.NewInMemoryPlayerStore()
 
-	playerStore.RecordWin("Pepper")
-	playerStore.RecordWin("Pepper")
+	for range 2 {
+	err := playerStore.RecordWin("Pepper")
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 	score, err := playerStore.GetPlayerScore("Pepper")
 	if err != nil {
 		fmt.Println(err)
 	}
-	playerStore.RecordWin("Larry")
+
+	err = playerStore.RecordWin("Larry")
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	league := playerStore.GetLeague()
 
 	fmt.Println(score)
@@ -47,13 +57,23 @@ func ExampleFileSystemPlayerStore() {
 		fmt.Println(err)
 	}
 
-	playerStore.RecordWin("Pepper")
-	playerStore.RecordWin("Pepper")
+	for range 2 {
+	err := playerStore.RecordWin("Pepper")
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 	score, err := playerStore.GetPlayerScore("Pepper")
 	if err != nil {
 		fmt.Println(err)
 	}
-	playerStore.RecordWin("Larry")
+
+	err = playerStore.RecordWin("Larry")
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	league := playerStore.GetLeague()
 
 	fmt.Println(score)

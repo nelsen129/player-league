@@ -22,9 +22,9 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 	})
 
 	t.Run("records and returns a score for a new player", func(t *testing.T) {
-		playerStore.RecordWin("Neil")
-		playerStore.RecordWin("Neil")
-		playerStore.RecordWin("Neil")
+		assertNoError(t, playerStore.RecordWin("Neil"))
+		assertNoError(t, playerStore.RecordWin("Neil"))
+		assertNoError(t, playerStore.RecordWin("Neil"))
 		got, err := playerStore.GetPlayerScore("Neil")
 		want := 3
 
@@ -44,8 +44,8 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 			{"Neil", 3},
 			{"Bob", 2},
 		}
-		playerStore.RecordWin("Bob")
-		playerStore.RecordWin("Bob")
+		assertNoError(t, playerStore.RecordWin("Bob"))
+		assertNoError(t, playerStore.RecordWin("Bob"))
 		got := playerStore.GetLeague()
 
 		if !reflect.DeepEqual(got, wantedLeague) {
@@ -58,14 +58,14 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 		player := "Karen"
 
 		// record first win so get won't fail
-		playerStore.RecordWin(player)
+		assertNoError(t, playerStore.RecordWin(player))
 
 		var wg sync.WaitGroup
 		wg.Add(3 * count)
 
 		for range count {
 			go func() {
-				playerStore.RecordWin(player)
+				assertNoError(t, playerStore.RecordWin(player))
 				wg.Done()
 			}()
 			go func() {
@@ -89,4 +89,10 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 			t.Errorf("got %d, want %d, league %v", got, count+1, league)
 		}
 	})
+}
+
+func assertNoError(t testing.TB, got error) {
+	if got != nil {
+		t.Errorf("expected no error, got %v", got)
+	}
 }
