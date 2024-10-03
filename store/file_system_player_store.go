@@ -3,29 +3,34 @@ package store
 import (
 	"encoding/json"
 	"io"
+	"os"
 	"sync"
+
+	"github.com/nelsen129/player-league/store/tape"
 )
 
 // FileSystemPlayerStore represents a PlayerStore that is stored in the
 // file system as a JSON file
 type FileSystemPlayerStore struct {
 	mu       sync.Mutex
-	database io.ReadWriteSeeker
+	database *json.Encoder
+	league   League
 }
 
 // NewFileSystemPlayerStore returns an FileSystemPlayerStore with an empty store
-func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
+func NewFileSystemPlayerStore(database *os.File) *FileSystemPlayerStore {
+	database.Seek(0, io.SeekStart)
+	league, _ := NewLeague(database)
 	f := new(FileSystemPlayerStore)
-	f.database = database
+	f.database = json.NewEncoder(tape.NewTape(database))
+	f.league = league
 	return f
 }
 
 // GetPlayerScore returns a score if the player exists or an error if
 // they don't
 func (f *FileSystemPlayerStore) GetPlayerScore(name string) (int, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	player := f.getLeague().Find(name)
+	player := f.league.Find(name)
 
 	if player == nil {
 		return 0, ErrPlayerNotFound
@@ -38,29 +43,19 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) (int, error) {
 func (f *FileSystemPlayerStore) RecordWin(name string) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	league := f.getLeague()
-	player := league.Find(name)
+	player := f.league.Find(name)
 
 	if player == nil {
-		league = append(league, Player{Name: name, Wins: 1})
+		f.league = append(f.league, Player{Name: name, Wins: 1})
 	} else {
 		player.Wins++
 	}
 
-	f.database.Seek(0, io.SeekStart)
-	json.NewEncoder(f.database).Encode(league)
+	f.database.Encode(f.league)
 }
 
 // GetLeague returns an ordered slice containing every Player in the league
 // sorted by score, descending
 func (f *FileSystemPlayerStore) GetLeague() League {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	return f.getLeague()
-}
-
-func (f *FileSystemPlayerStore) getLeague() League {
-	f.database.Seek(0, io.SeekStart)
-	league, _ := NewLeague(f.database)
-	return league
+	return f.league
 }

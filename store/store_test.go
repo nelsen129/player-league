@@ -52,7 +52,7 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 	})
 
 	t.Run("handles concurrent operations", func(t *testing.T) {
-		count := 100
+		count := 1000
 		player := "Karen"
 
 		var wg sync.WaitGroup

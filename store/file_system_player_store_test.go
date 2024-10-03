@@ -1,7 +1,6 @@
 package store_test
 
 import (
-	"io"
 	"os"
 	"testing"
 
@@ -17,7 +16,7 @@ func TestFileSystemPlayerStore(t *testing.T) {
 	})
 }
 
-func createTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := os.CreateTemp("", "db")
