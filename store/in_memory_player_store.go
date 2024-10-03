@@ -6,6 +6,7 @@ import (
 )
 
 // InMemoryPlayerStore represents a PlayerStore that is stored in memory
+// InMemoryPlayerStore is safe for concurrent use by multiple goroutines
 type InMemoryPlayerStore struct {
 	mu    sync.Mutex
 	store map[string]int

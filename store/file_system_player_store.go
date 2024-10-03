@@ -13,6 +13,7 @@ import (
 
 // FileSystemPlayerStore represents a PlayerStore that is stored in the
 // file system as a JSON file
+// FileSystemPlayerStore is safe for concurrent use by multiple goroutines
 type FileSystemPlayerStore struct {
 	mu       sync.Mutex
 	database *json.Encoder

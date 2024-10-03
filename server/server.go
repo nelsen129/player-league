@@ -1,3 +1,4 @@
+// Package server implements the HTTP server for interacting with a league of players
 package server
 
 import (
