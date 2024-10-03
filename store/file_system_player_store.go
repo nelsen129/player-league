@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"sync"
 
 	"github.com/nelsen129/player-league/store/tape"
@@ -20,7 +21,8 @@ type FileSystemPlayerStore struct {
 
 // NewFileSystemPlayerStore returns an FileSystemPlayerStore with an empty store
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
-	file.Seek(0, io.SeekStart)
+	initializePlayerDBFile(file)
+
 	league, err := NewLeague(file)
 
 	if err != nil {
@@ -63,5 +65,22 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 // GetLeague returns an ordered slice containing every Player in the league
 // sorted by score, descending
 func (f *FileSystemPlayerStore) GetLeague() League {
+	sort.Sort(sort.Reverse(f.league))
 	return f.league
+}
+
+func initializePlayerDBFile(file *os.File) error {
+	file.Seek(0, io.SeekStart)
+	info, err := file.Stat()
+
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, io.SeekStart)
+	}
+
+	return nil
 }

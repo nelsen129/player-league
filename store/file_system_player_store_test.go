@@ -2,6 +2,7 @@ package store_test
 
 import (
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/nelsen129/player-league/store"
@@ -18,6 +19,46 @@ func TestFileSystemPlayerStore(t *testing.T) {
 		}
 
 		testStore(t, playerStore)
+	})
+
+	t.Run("works with an empty file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
+		_, err := store.NewFileSystemPlayerStore(database)
+
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+	})
+
+	t.Run("sorts the league", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+			{"name": "Cleo", "wins": 10},
+			{"name": "Chris", "wins": 33}]`)
+		defer cleanDatabase()
+
+		playerStore, err := store.NewFileSystemPlayerStore(database)
+
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+
+		got := playerStore.GetLeague()
+
+		want := store.League{
+			{"Chris", 33},
+			{"Cleo", 10},
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+
+		// read again
+		got = playerStore.GetLeague()
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
 	})
 }
 
