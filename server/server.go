@@ -1,34 +1,42 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/nelsen129/player-league/store"
 )
 
-// PlayerStore records and stores the scores for players
-type PlayerStore interface {
-	// Should return a player's score
-	GetPlayerScore(name string) (int, error)
-	// Should increment a player's score
-	RecordWin(name string)
-}
+const jsonContentType = "application/json"
 
 // PlayerServer handles the HTTP routing for requests that
 // interact with the PlayerStore
 type PlayerServer struct {
-	store PlayerStore
+	store store.PlayerStore
+	http.Handler
 }
 
 // NewPlayerServer initializes a PlayerServer with a PlayerStore
-func NewPlayerServer(store PlayerStore) *PlayerServer {
-	return &PlayerServer{
-		store: store,
-	}
+func NewPlayerServer(store store.PlayerStore) *PlayerServer {
+	p := new(PlayerServer)
+	p.store = store
+
+	router := http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.playerHandler))
+	p.Handler = router
+
+	return p
 }
 
-// ServeHTTP handles the HTTP server for player requests.
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", jsonContentType)
+	_ = json.NewEncoder(w).Encode(p.store.GetLeague())
+}
+
+func (p *PlayerServer) playerHandler(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
 	switch r.Method {
