@@ -15,6 +15,9 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 		if err == nil {
 			t.Error("want error, got none")
 		}
+		if err != store.ErrPlayerNotFound {
+			t.Errorf("got %q, want %q", err, store.ErrPlayerNotFound)
+		}
 	})
 
 	t.Run("records and returns a score for a new player", func(t *testing.T) {

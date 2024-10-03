@@ -1,7 +1,6 @@
 package store
 
 import (
-	"errors"
 	"sync"
 )
 
@@ -11,7 +10,7 @@ type InMemoryPlayerStore struct {
 	store map[string]int
 }
 
-// NewInMemoryPlayerStore returns an InMemoryPlayer with an empty store
+// NewInMemoryPlayerStore returns an InMemoryPlayerStore with an empty store
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	i := new(InMemoryPlayerStore)
 	i.store = map[string]int{}
@@ -24,7 +23,7 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) (int, error) {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	if _, ok := i.store[name]; !ok {
-		return 0, errors.New("player not found")
+		return 0, ErrPlayerNotFound
 	}
 	return i.store[name], nil
 }

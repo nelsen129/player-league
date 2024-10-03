@@ -6,7 +6,7 @@ import (
 	"github.com/nelsen129/player-league/store"
 )
 
-func ExamplePlayerServer_ServeHTTP() {
+func ExampleInMemoryPlayerStore() {
 	playerStore := store.NewInMemoryPlayerStore()
 
 	playerStore.RecordWin("Pepper")
