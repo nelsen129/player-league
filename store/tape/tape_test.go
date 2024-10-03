@@ -14,7 +14,10 @@ func TestTape_Write(t *testing.T) {
 
 	tape := tape.NewTape(file)
 
-	tape.Write([]byte("abc"))
+	_, err := tape.Write([]byte("abc"))
+	if err != nil {
+		t.Fatalf("could not write to file %v", err)
+	}
 
 	file.Seek(0, io.SeekStart)
 	newFileContents, _ := io.ReadAll(file)
@@ -31,12 +34,14 @@ func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := os.CreateTemp("", "db")
-
 	if err != nil {
 		t.Fatalf("could not create temp file %v", err)
 	}
 
-	tmpfile.Write([]byte(initialData))
+	_, err = tmpfile.Write([]byte(initialData))
+	if err != nil {
+		t.Fatalf("could not write to temp file %v", err)
+	}
 
 	removeFile := func() {
 		tmpfile.Close()

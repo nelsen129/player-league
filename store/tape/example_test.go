@@ -10,7 +10,10 @@ import (
 
 func ExampleTape() {
 	file, _ := os.CreateTemp("", "db")
-	file.Write([]byte("12345"))
+	_, err := file.Write([]byte("12345"))
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	defer func() {
 		file.Close()
@@ -19,30 +22,17 @@ func ExampleTape() {
 
 	tape := tape.NewTape(file)
 
-	tape.Write([]byte("abc"))
+	_, err = tape.Write([]byte("abc"))
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	file.Seek(0, io.SeekStart)
-	newFileContents, _ := io.ReadAll(file)
+	newFileContents, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Println(string(newFileContents))
 	// Output: abc
 }
-
-//func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
-//	t.Helper()
-//
-//	tmpfile, err := os.CreateTemp("", "db")
-//
-//	if err != nil {
-//		t.Fatalf("could not create temp file %v", err)
-//	}
-//
-//	tmpfile.Write([]byte(initialData))
-//
-//	removeFile := func() {
-//		tmpfile.Close()
-//		os.Remove(tmpfile.Name())
-//	}
-//
-//	return tmpfile, removeFile
-//}

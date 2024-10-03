@@ -52,12 +52,14 @@ func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := os.CreateTemp("", "db")
-
 	if err != nil {
 		t.Fatalf("could not create temp file %v", err)
 	}
 
-	tmpfile.Write([]byte(initialData))
+	_, err = tmpfile.Write([]byte(initialData))
+	if err != nil {
+		t.Fatalf("could not write temp file %v", err)
+	}
 
 	removeFile := func() {
 		tmpfile.Close()

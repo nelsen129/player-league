@@ -31,7 +31,11 @@ func ExampleFileSystemPlayerStore() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	file.Write([]byte(""))
+
+	_, err = file.Write([]byte(""))
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	defer func() {
 		file.Close()

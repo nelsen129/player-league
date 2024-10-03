@@ -2,6 +2,7 @@
 package tape
 
 import (
+	"fmt"
 	"io"
 	"os"
 )
@@ -22,7 +23,13 @@ func NewTape(file *os.File) *Tape {
 // Write truncates the file and then writes p to the file,
 // effectively completely replacing it
 func (t *Tape) Write(p []byte) (int, error) {
-	t.file.Truncate(0)
-	t.file.Seek(0, io.SeekStart)
+	err := t.file.Truncate(0)
+	if err != nil {
+		return 0, fmt.Errorf("could not truncate file, %v", err)
+	}
+	_, err = t.file.Seek(0, io.SeekStart)
+	if err != nil {
+		return 0, fmt.Errorf("could not seek file, %v", err)
+	}
 	return t.file.Write(p)
 }

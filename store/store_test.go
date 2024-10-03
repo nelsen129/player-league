@@ -64,7 +64,10 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 				wg.Done()
 			}()
 			go func() {
-				playerStore.GetPlayerScore(player)
+				_, err := playerStore.GetPlayerScore(player)
+				if err != nil {
+					t.Errorf("got error when getting score %v", err)
+				}
 				wg.Done()
 			}()
 			go func() {
