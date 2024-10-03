@@ -7,15 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [0.2.0] - 2024-10-02
+
+### Added
 - /league endpoint, which returns the scores for every player in the league
 - Concurrent operation support in InMemoryPlayerStore
 ### Changed
 - PlayerStore interface moved from the server package to the store package
 - Promoted InMemoryPlayerStore to proper feature
-### Deprecated
-### Removed
-### Fixed
-### Security
 
 ## [0.1.0] - 2024-10-01
 
