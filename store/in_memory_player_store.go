@@ -47,7 +47,6 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 		idx++
 	}
 
-	sort.Sort(league)
-	sort.Reverse(league)
+	sort.Sort(sort.Reverse(league))
 	return league
 }

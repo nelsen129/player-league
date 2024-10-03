@@ -20,7 +20,7 @@ type Player struct {
 type PlayerSlice []Player
 
 func (p PlayerSlice) Less(i, j int) bool {
-	return p[i].Wins > p[j].Wins
+	return p[i].Wins < p[j].Wins
 }
 
 func (p PlayerSlice) Len() int {
