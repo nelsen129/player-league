@@ -40,13 +40,20 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 // GetLeague returns an ordered slice containing every Player in the league
 // sorted by score, descending
 func (i *InMemoryPlayerStore) GetLeague() []Player {
+	league := i.getUnsortedLeague()
+
+	sort.Sort(sort.Reverse(league))
+	return league
+}
+
+func (i *InMemoryPlayerStore) getUnsortedLeague() PlayerSlice {
 	league := make(PlayerSlice, len(i.store))
 	idx := 0
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	for k, v := range i.store {
 		league[idx] = Player{Name: k, Wins: v}
 		idx++
 	}
-
-	sort.Sort(sort.Reverse(league))
 	return league
 }

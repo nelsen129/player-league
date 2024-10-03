@@ -52,23 +52,22 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 	})
 
 	t.Run("handles concurrent operations", func(t *testing.T) {
-		winCount := 1000
-		scoreCount := 1000
+		count := 1000
 		player := "Karen"
 
 		var wg sync.WaitGroup
-		wg.Add(winCount)
-		wg.Add(scoreCount)
+		wg.Add(3 * count)
 
-		for range winCount {
+		for range count {
 			go func() {
 				playerStore.RecordWin(player)
 				wg.Done()
 			}()
-		}
-		for range scoreCount {
 			go func() {
-				playerStore.GetPlayerScore(player)
+				wg.Done()
+			}()
+			go func() {
+				playerStore.GetLeague()
 				wg.Done()
 			}()
 		}
@@ -76,8 +75,8 @@ func testStore(t *testing.T, playerStore store.PlayerStore) {
 
 		got, _ := playerStore.GetPlayerScore(player)
 
-		if got != winCount {
-			t.Errorf("got %d, want %d", got, winCount)
+		if got != count {
+			t.Errorf("got %d, want %d", got, count)
 		}
 	})
 }
