@@ -1,3 +1,4 @@
+// Package server implements the HTTP server for interacting with a league of players
 package server
 
 import (
@@ -58,6 +59,10 @@ func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) incrementScore(w http.ResponseWriter, player string) {
-	p.store.RecordWin(player)
+	err := p.store.RecordWin(player)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusAccepted)
 }

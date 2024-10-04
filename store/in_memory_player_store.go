@@ -6,6 +6,7 @@ import (
 )
 
 // InMemoryPlayerStore represents a PlayerStore that is stored in memory
+// InMemoryPlayerStore is safe for concurrent use by multiple goroutines
 type InMemoryPlayerStore struct {
 	mu    sync.Mutex
 	store map[string]int
@@ -31,26 +32,28 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) (int, error) {
 
 // RecordWin increments a player's score by 1. If the player doesn't exist,
 // it will create the player and increment their score to 1.
-func (i *InMemoryPlayerStore) RecordWin(name string) {
+func (i *InMemoryPlayerStore) RecordWin(name string) error {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	i.store[name]++
+
+	return nil
 }
 
 // GetLeague returns an ordered slice containing every Player in the league
 // sorted by score, descending
-func (i *InMemoryPlayerStore) GetLeague() []Player {
+func (i *InMemoryPlayerStore) GetLeague() League {
 	league := i.getUnsortedLeague()
 
 	sort.Sort(sort.Reverse(league))
 	return league
 }
 
-func (i *InMemoryPlayerStore) getUnsortedLeague() PlayerSlice {
-	league := make(PlayerSlice, len(i.store))
-	idx := 0
+func (i *InMemoryPlayerStore) getUnsortedLeague() League {
 	i.mu.Lock()
 	defer i.mu.Unlock()
+	league := make(League, len(i.store))
+	idx := 0
 	for k, v := range i.store {
 		league[idx] = Player{Name: k, Wins: v}
 		idx++

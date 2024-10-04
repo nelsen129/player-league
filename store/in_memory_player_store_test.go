@@ -15,14 +15,14 @@ func TestInMemoryPlayerStore(t *testing.T) {
 
 	t.Run("sorts for GetLeague", func(t *testing.T) {
 		playerStore := store.NewInMemoryPlayerStore()
-		sortedLeague := []store.Player{
+		sortedLeague := store.League{
 			{Name: "Alice", Wins: 5},
 			{Name: "Bob", Wins: 4},
 			{Name: "Charlie", Wins: 3},
 			{Name: "Dave", Wins: 2},
 			{Name: "Eve", Wins: 1},
 		}
-		unsortedLeague := []store.Player{
+		unsortedLeague := store.League{
 			{Name: "Dave", Wins: 2},
 			{Name: "Bob", Wins: 4},
 			{Name: "Charlie", Wins: 3},
@@ -32,7 +32,7 @@ func TestInMemoryPlayerStore(t *testing.T) {
 
 		for _, player := range unsortedLeague {
 			for range player.Wins {
-				playerStore.RecordWin(player.Name)
+				assertNoError(t, playerStore.RecordWin(player.Name))
 			}
 		}
 
