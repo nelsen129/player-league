@@ -2,6 +2,7 @@ package store_test
 
 import (
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -58,6 +59,35 @@ func TestFileSystemPlayerStore(t *testing.T) {
 		got = playerStore.GetLeague()
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("creates a store from a file", func(t *testing.T) {
+		path := filepath.Join(os.TempDir(), "db")
+
+		playerStore, closeFunc, err := store.FileSystemPlayerStoreFromFile(path)
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+		defer closeFunc()
+
+		got := playerStore.GetLeague()
+
+		want := store.League{}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("handles errors in creating store from file", func(t *testing.T) {
+		path := ""
+		_, closeFunc, err := store.FileSystemPlayerStoreFromFile(path)
+		if err == nil {
+			t.Error("expected error, got none")
+		}
+		if closeFunc != nil {
+			defer closeFunc()
 		}
 	})
 }

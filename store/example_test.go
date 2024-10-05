@@ -11,11 +11,11 @@ func ExampleInMemoryPlayerStore() {
 	playerStore := store.NewInMemoryPlayerStore()
 
 	for range 2 {
-	err := playerStore.RecordWin("Pepper")
-	if err != nil {
-		fmt.Println(err)
+		err := playerStore.RecordWin("Pepper")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-}
 
 	score, err := playerStore.GetPlayerScore("Pepper")
 	if err != nil {
@@ -58,11 +58,11 @@ func ExampleFileSystemPlayerStore() {
 	}
 
 	for range 2 {
-	err := playerStore.RecordWin("Pepper")
-	if err != nil {
-		fmt.Println(err)
+		err := playerStore.RecordWin("Pepper")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-}
 
 	score, err := playerStore.GetPlayerScore("Pepper")
 	if err != nil {

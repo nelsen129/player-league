@@ -38,6 +38,28 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	return f, nil
 }
 
+// FileSystemPlayerStoreFromFile creates a new FileSystemPlayerStore from a file path
+func FileSystemPlayerStoreFromFile(path string) (*FileSystemPlayerStore, func(), error) {
+	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("error loading path %s %v", path, err)
+	}
+
+	closeFunc := func() {
+		db.Close()
+	}
+
+	store, err := NewFileSystemPlayerStore(db)
+
+	if err != nil {
+		defer db.Close()
+		return nil, nil, fmt.Errorf("problem creating file system player store, %v", err)
+	}
+
+	return store, closeFunc, nil
+}
+
 // GetPlayerScore returns a score if the player exists or an error if
 // they don't
 func (f *FileSystemPlayerStore) GetPlayerScore(name string) (int, error) {
